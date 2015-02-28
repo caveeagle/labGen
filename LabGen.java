@@ -69,29 +69,25 @@ public class LabGen
         for(int j = 0; j < sizeY; j++)
         {
                 blocks[0][j] = wallBlock;
-                blocks[1][j] = wallBlock;
                 blocks[sizeX-1][j] = wallBlock;
-                blocks[sizeX-2][j] = wallBlock;
         }
         for(int i = 0; i < sizeX; i++)
         {
                 blocks[i][0] = wallBlock;
-                blocks[i][1] = wallBlock;
                 blocks[i][sizeY-1] = wallBlock;
-                blocks[i][sizeY-2] = wallBlock;
         }
         
-        for(int i = mainRoomXmin; i <= mainRoomXmax; i++)
+        for(int i = mainRoomXmin+1; i <= mainRoomXmax-1; i++)
         {
             blocks[i][mainRoomYmin] = wallBlock;
             blocks[i][mainRoomYmax] = wallBlock;
         }
-        for(int j = mainRoomYmin; j <= mainRoomYmax; j++)
+        for(int j = mainRoomYmin+1; j <= mainRoomYmax-1; j++)
         {
             blocks[mainRoomXmin][j] = wallBlock;
             blocks[mainRoomXmax][j] = wallBlock;
         }
-        blocks[46][16] = emptyBlock;
+        
         
     } 
 
@@ -204,7 +200,7 @@ public class LabGen
         {
             for (int i = 2; i < sizeX-2; i+=2)
             {
-              if( j>=mainRoomYmin-1 && j<=mainRoomYmax && i>=mainRoomXmin && i<=mainRoomXmax ) continue;
+              if( j>=mainRoomYmin-1 && j<=mainRoomYmax+1 && i>=mainRoomXmin-1 && i<=mainRoomXmax+1 ) continue;
               
               char ch = this.blockGet(i,j);
               
@@ -232,6 +228,43 @@ public class LabGen
         
     } 
     
+    private void correctWalls()
+    {
+        // Strengthen walls
+        for(int j = 0; j < sizeY; j++)
+        {
+                blocks[1][j] = wallBlock;
+                blocks[sizeX-2][j] = wallBlock;
+        }
+        for(int i = 0; i < sizeX; i++)
+        {
+                blocks[i][1] = wallBlock;
+                blocks[i][sizeY-2] = wallBlock;
+        }       
+        
+        // Correct main Room walls 
+        for(int i = mainRoomXmin+1; i <= mainRoomXmax-1; i++)
+        {
+            blocks[i][mainRoomYmin] = emptyBlock;
+            blocks[i][mainRoomYmax] = emptyBlock;
+        }
+        for(int j = mainRoomYmin+1; j <= mainRoomYmax-1; j++)
+        {
+            blocks[mainRoomXmin][j] = emptyBlock;
+            blocks[mainRoomXmax][j] = emptyBlock;
+        }
+        for(int i = mainRoomXmin; i <= mainRoomXmax; i++)
+        {
+            blocks[i][mainRoomYmin] = wallBlock;
+            blocks[i][mainRoomYmax] = wallBlock;
+        }
+        for(int j = mainRoomYmin; j <= mainRoomYmax; j++)
+        {
+            blocks[mainRoomXmin][j] = wallBlock;
+            blocks[mainRoomXmax][j] = wallBlock;
+        }
+    }
+
     public void makeLabyrinth()
     {
        this.markOddPoints(); 
@@ -245,6 +278,18 @@ public class LabGen
           
           this.drawLine(x,y,D);
        }
+       
+        correctWalls();
+        
+        blocks[46][16] = emptyBlock; // Door from Main Room
+       
+        for (int i = 76; i < 86; i++) // Make hidden room
+        {
+            for (int j = 33; j < 37; j++)
+            {
+               blocks[i][j] = emptyBlock;
+            }
+        }
          
     }
 
