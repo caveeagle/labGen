@@ -6,12 +6,6 @@
 
 public class LabGen
 {
-     /** Input file name, for initial condition */
-     static String fileIn = "lab_in.txt";
-     
-     /** Output file name */
-     static String fileOut = "lab_out.txt";
-     
      /** labyrinth size X */
      static int sizeX = 92 ;
      
@@ -21,8 +15,20 @@ public class LabGen
      /** labyrinth blocks */
      private char[][] blocks;
      
+     private char wallBlock = '#';
+     private char emptyBlock = ' ';
+
+    /* Central room coord */
+    private int mainRoomXmin = 36;
+    private int mainRoomXmax = 56;
+    private int mainRoomYmin = 16;
+    private int mainRoomYmax = 25;
+    
+     
+    /* ========================================= */
+    
     /**
-    *   Construct a labyrinth
+    *   Construct a labyrinth from file
     *   @param inputFilename
     */
     public LabGen(String inputFilename)
@@ -41,6 +47,51 @@ public class LabGen
                 blocks[i][j] = bc;
             }
         }
+        
+    } 
+    
+    
+    /**
+    *   Construct a labyrinth without files
+    */
+    public LabGen()
+    {
+        blocks = new char[sizeX][sizeY];
+
+        for (int j = 0; j < sizeY; j++)
+        {
+            for (int i = 0; i < sizeX; i++)
+            {
+               blocks[i][j] = emptyBlock;
+            }
+        }
+        
+        for(int j = 0; j < sizeY; j++)
+        {
+                blocks[0][j] = wallBlock;
+                blocks[1][j] = wallBlock;
+                blocks[sizeX-1][j] = wallBlock;
+                blocks[sizeX-2][j] = wallBlock;
+        }
+        for(int i = 0; i < sizeX; i++)
+        {
+                blocks[i][0] = wallBlock;
+                blocks[i][1] = wallBlock;
+                blocks[i][sizeY-1] = wallBlock;
+                blocks[i][sizeY-2] = wallBlock;
+        }
+        
+        for(int i = mainRoomXmin; i <= mainRoomXmax; i++)
+        {
+            blocks[i][mainRoomYmin] = wallBlock;
+            blocks[i][mainRoomYmax] = wallBlock;
+        }
+        for(int j = mainRoomYmin; j <= mainRoomYmax; j++)
+        {
+            blocks[mainRoomXmin][j] = wallBlock;
+            blocks[mainRoomXmax][j] = wallBlock;
+        }
+        blocks[46][16] = emptyBlock;
         
     } 
 
@@ -124,7 +175,7 @@ public class LabGen
             
             if( Character.isWhitespace(ch1) )
             {
-              this.blockSet(x0,y0,'#');  
+              this.blockSet(x0,y0,wallBlock);  
             }
 
             char ch2 = this.blockGet(x2,y2);
@@ -149,11 +200,11 @@ public class LabGen
     private void markOddPoints()
     {
         /** Find Odd Points */
-        for (int j = 3; j < sizeY-2; j+=2)
+        for (int j = 2; j < sizeY-2; j+=2)
         {
-            for (int i = 3; i < sizeX-2; i+=2)
+            for (int i = 2; i < sizeX-2; i+=2)
             {
-              if( j>16 && j< 25 && i>36 && i<57 ) continue;
+              if( j>=mainRoomYmin-1 && j<=mainRoomYmax && i>=mainRoomXmin && i<=mainRoomXmax ) continue;
               
               char ch = this.blockGet(i,j);
               
@@ -200,14 +251,11 @@ public class LabGen
      
      public static void main (String[] args)
      {
-        LabGen lab = new LabGen(fileIn);
+        LabGen lab = new LabGen();
         
         lab.makeLabyrinth();
         
-        //char bc = lab.blockGet(46,21);
-        //lab.blockSet(45,20,'@');
-        
-        lab.writeInFile(fileOut);
+        lab.writeInFile("lab_out.txt");
         
         System.out.println("Job done");
      }
