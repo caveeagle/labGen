@@ -61,12 +61,40 @@ public class LabGen
         }
     } 
 
+
+    /**
+    *   GET labyrinth element
+    *   @param X
+    *   @param Y
+    */
+    public char blockGet(int X,int Y)
+    { 
+        return blocks[X][Y];
+    } 
+
+    /**
+    *   SET labyrinth element
+    *   @param X
+    *   @param Y
+    *   @param C: block value
+    */
+    public void blockSet(int X,int Y, char C)
+    { 
+        blocks[X][Y] = C;
+    } 
+
+
      
      public static void main (String[] args)
      {
-        LabGen labyrinth = new LabGen(fileIn);
+        LabGen lab = new LabGen(fileIn);
         
-        labyrinth.writeInFile(fileOut);
+        //char bc = lab.blockGet(46,21);
+
+        //lab.blockSet(45,20,'@');
+        
+        
+        lab.writeInFile(fileOut);
         
         System.out.println("Job done");
      }
