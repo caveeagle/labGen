@@ -124,7 +124,7 @@ public class LabGen
             
             if( Character.isWhitespace(ch1) )
             {
-              this.blockSet(x0,y0,'*');  
+              this.blockSet(x0,y0,'#');  
             }
 
             char ch2 = this.blockGet(x2,y2);
@@ -142,24 +142,13 @@ public class LabGen
     } 
     
     
-    private int[][] pointsInLab;
-    private int pointsInLabNum;
+    private int[] pointsInLabX = new int[sizeX*sizeY];
+    private int[] pointsInLabY = new int[sizeX*sizeY];
+    private int pointsInLabNum = 0;
     
     private void markOddPoints()
     {
-        pointsInLab = new int[sizeX][sizeY];
-        pointsInLabNum = 0;
-        
-        /** Clear array */
-        for (int j = 0; j < sizeY; j++)
-        {
-            for (int i = 0; i < sizeX; i++)
-            {
-                pointsInLab[i][j] = 0; // clear array
-            }
-        }
-
-        /** Mark Odd Points */
+        /** Find Odd Points */
         for (int j = 3; j < sizeY-2; j+=2)
         {
             for (int i = 3; i < sizeX-2; i+=2)
@@ -170,19 +159,41 @@ public class LabGen
               
               if( Character.isWhitespace(ch) )
               { 
+                pointsInLabX[pointsInLabNum] = i;
+                pointsInLabY[pointsInLabNum] = j;
                 pointsInLabNum++;
-                pointsInLab[i][j] = pointsInLabNum;  
               }
             }
         }
-
- 
+        
+        /** Randomize Odd Points */
+        for (int i = 0; i < pointsInLabNum; i++)
+        {
+            int j = StdRandom.uniform(i+1);
+            
+            int tX = pointsInLabX[i];
+            int tY = pointsInLabY[i];
+            pointsInLabX[i] = pointsInLabX[j];
+            pointsInLabY[i] = pointsInLabY[j];
+            pointsInLabX[j] = tX;
+            pointsInLabY[j] = tY;
+        }
+        
     } 
     
     public void makeLabyrinth()
     {
        this.markOddPoints(); 
        
+       while(pointsInLabNum>0)
+       {
+          int D = StdRandom.uniform(1,5); 
+          int x = pointsInLabX[pointsInLabNum-1];
+          int y = pointsInLabY[pointsInLabNum-1];
+          pointsInLabNum--;
+          
+          this.drawLine(x,y,D);
+       }
          
     }
 
@@ -193,12 +204,8 @@ public class LabGen
         
         lab.makeLabyrinth();
         
-        //lab.drawLine(46,7,3);
-        
         //char bc = lab.blockGet(46,21);
-
         //lab.blockSet(45,20,'@');
-        
         
         lab.writeInFile(fileOut);
         
